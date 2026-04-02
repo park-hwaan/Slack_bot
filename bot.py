@@ -32,15 +32,17 @@ app = App(token=BOT_TOKEN)
 
 # /기록 커맨드 처리
 @app.command("/기록")
-def handle_record(ack, respond, command):
+def handle_record(ack, respond, say, command):
     ack()
     text  = command["text"].strip()
     parts = [p.strip() for p in text.split("|")]
     if len(parts) < 2:
-        respond("형식이 올바르지 않아요!\n예시: `/기록 홍길동 | 2025-04-02 | 사과 | 50개`")
+        respond("형식이 올바르지 않아요!")
         return
+    
+    user_id = command["user_id"]  # 입력한 사람 슬랙 ID
     sheet.append_row(parts)
-    respond(f"✅ 기록 완료! {' | '.join(parts)}")
+    say(f"✅ <@{user_id}>님이 기록했어요!\n{' | '.join(parts)}")
 
 # /일정 커맨드 처리
 @app.command("/일정")
