@@ -7,10 +7,13 @@ from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 
 # 환경변수에서 읽기
-BOT_TOKEN = os.environ["BOT_TOKEN"]
-APP_TOKEN = os.environ["APP_TOKEN"]
-SHEET_ID  = os.environ["SHEET_ID"]
-CALENDAR_ID = os.environ["CALENDAR_ID"]
+BOT_TOKEN = os.environ["BOT_TOKEN"] # 슬랙 봇 토큰 - api.slack.com → OAuth & Permissions → Bot User OAuth Token (xoxb-...)
+
+APP_TOKEN = os.environ["APP_TOKEN"] # 슬랙 앱 토큰 - api.slack.com → Basic Information → App-Level Tokens (xapp-...)
+
+SHEET_ID  = os.environ["SHEET_ID"] # 구글 스프레드시트 ID - 시트 URL에서 /d/ 뒤에 오는 긴 문자열
+
+CALENDAR_ID = os.environ["CALENDAR_ID"] # 구글 캘린더 ID - 캘린더 설정 → 캘린더 통합 섹션 (xxx@group.calendar.google.com)
 
 # 구글 인증 (시트 + 캘린더 둘 다)
 SCOPES = [
@@ -35,23 +38,23 @@ app = App(token=BOT_TOKEN)
 def handle_record(ack, respond, say, command):
     ack()
     text  = command["text"].strip()
-    parts = [p.strip() for p in text.split("|")]
+    parts = [p.strip() for p in text.split("_")]
     if len(parts) < 2:
         respond("형식이 올바르지 않아요!")
         return
     
     user_id = command["user_id"]  # 입력한 사람 슬랙 ID
     sheet.append_row(parts)
-    say(f"✅ <@{user_id}>님이 기록했어요!\n{' | '.join(parts)}")
+    say(f"✅ <@{user_id}>님이 기록했어요!\n{' _ '.join(parts)}")
 
 # /일정 커맨드 처리
 @app.command("/일정")
 def handle_calendar(ack, respond, command):
     ack()
     text = command["text"].strip()
-    parts = [p.strip() for p in text.split("|")]
+    parts = [p.strip() for p in text.split("_")]
     if len(parts) != 4:
-        respond("형식이 올바르지 않아요!\n예시: `/일정 팀 회의 | 2025-04-03 | 14:00 | 15:00`")
+        respond("형식이 올바르지 않아요!\n예시: `/일정 팀 회의_2025-04-03_14:00_15:00`")
         return
     title, date, start_time, end_time = parts
     event = {
