@@ -45,7 +45,7 @@ def handle_record(ack, respond, say, command):
     
     user_id = command["user_id"]  # 입력한 사람 슬랙 ID
     sheet.append_row(parts)
-    say(f"✅ <@{user_id}>님이 기록했어요!\n{' _ '.join(parts)}")
+    say(f"✅ <@{user_id}>님이 기록했어요!\n{' | '.join(parts)}")
 
 # /일정 커맨드 처리
 @app.command("/일정")
